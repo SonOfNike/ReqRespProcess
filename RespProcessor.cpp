@@ -24,15 +24,60 @@ void RespProcessor::shutDown(){
     
 }
 
-void RespProcessor::process_resp(simdjson::dom::object _obj){
-    currentMD.m_type = md_type::QUOTE;
-    currentMD.m_symbolId = mSymIDManager->getID(_obj["S"].get_string());
-    currentMD.m_bid_price = Price(_obj["bp"].get_double() * 1000);
-    currentMD.m_ask_price = Price(_obj["ap"].get_double() * 1000);
-    currentMD.m_bid_quant = Shares(_obj["bs"].get_int64() * 100);
-    currentMD.m_ask_quant = Shares(_obj["as"].get_int64() * 100);
+void RespProcessor::process_cancel(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::CANCEL_CONFIRM;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
 
-    //Timestamp conversion
-    currentMD.m_timestamp = parse_timestring(_obj["t"].get_string());
-    mShmemManager->write_MD(currentMD);
+    mShmemManager->write_resp(currentResponse);
+}
+
+void RespProcessor::process_fill(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::TRADE_CONFIRM;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
+    std::string_view sv = _obj["data"]["price"].get_string();
+    double value;
+    std::from_chars(sv.data(), sv.data() + sv.length(), value);
+    currentResponse.m_resp_price = Price(value * DOLLAR);
+    sv = _obj["data"]["qty"].get_string();
+    std::from_chars(sv.data(), sv.data() + sv.length(), value);
+    currentResponse.m_resp_quant = Shares(value);
+}
+
+void RespProcessor::process_order_reject(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::ORDER_REJECT;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
+}
+
+void RespProcessor::process_cancel_reject(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::CANCEL_REJECT;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
+}
+
+void RespProcessor::process_replace(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::MODORDER_CONFIRM;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
+}
+
+void RespProcessor::process_order_confirm(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::NEWORDER_CONFIRM;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
+}
+
+void RespProcessor::process_replace_reject(simdjson::dom::object _obj){
+    currentResponse.clear();
+    currentResponse.m_type = resp_type::MOD_REJECT;
+    currentResponse.m_symbolId = mSymIDManager->getID(_obj["data"]["order"]["symbol"].get_string());
+    currentResponse.m_order_id = stringViewToInt(_obj["data"]["order"]["client_order_id"].get_string()).value();
 }
