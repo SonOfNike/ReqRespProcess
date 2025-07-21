@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Utils/MDShmem.h"
-#include "../Utils/MDupdate.h"
+#include "../Utils/RespShmem.h"
+#include "../Utils/Response.h"
 
 class ShmemManager {
 private:
-    MDShmem* md_shmem = nullptr;
+    RespShmem* resp_shmem = nullptr;
 
     static ShmemManager* uniqueInstance;
     ShmemManager(){;}
@@ -14,5 +14,5 @@ public:
     static ShmemManager* getInstance();
     void startUp();
     void shutDown();
-    void write_MD(const MDupdate& _md_update);
+    void write_resp(const Response& _response);
 };

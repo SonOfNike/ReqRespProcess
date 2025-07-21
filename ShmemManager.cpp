@@ -16,10 +16,10 @@ ShmemManager* ShmemManager::getInstance(){
 
 void ShmemManager::startUp(){
     int shm_fd;
-    size_t shm_size = sizeof(MDShmem);
+    size_t shm_size = sizeof(RespShmem);
 
     // Create or open the shared memory object
-    shm_fd = shm_open(MD_shm_name, O_RDWR, 0666);
+    shm_fd = shm_open(RESP_shm_name, O_RDWR, 0666);
     if (shm_fd == -1) {
         perror("shm_open");
     }
@@ -30,24 +30,24 @@ void ShmemManager::startUp(){
     }
 
     // Map the shared memory object into the process's address space
-    md_shmem = (MDShmem*)mmap(0, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (md_shmem == MAP_FAILED) {
+    resp_shmem = (RespShmem*)mmap(0, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    if (resp_shmem == MAP_FAILED) {
         perror("mmap");
     }
     close(shm_fd);
 }
 
 void ShmemManager::shutDown(){
-    if (munmap(md_shmem, sizeof(MDShmem)) == -1) {
+    if (munmap(resp_shmem, sizeof(RespShmem)) == -1) {
         perror("munmap");
     }
 }
 
-void ShmemManager::write_MD(const MDupdate& _md_update){
-    md_shmem->m_queue[md_shmem->next_write_index] = _md_update;
-    md_shmem->next_write_index++;
-    if(md_shmem->next_write_index >= MD_QUEUE_SIZE){
-        md_shmem->next_write_index = 0;
-        md_shmem->next_write_page++;
+void ShmemManager::write_resp(const Response& _response){
+    resp_shmem->m_queue[resp_shmem->next_write_index] = _response;
+    resp_shmem->next_write_index++;
+    if(resp_shmem->next_write_index >= RESP_QUEUE_SIZE){
+        resp_shmem->next_write_index = 0;
+        resp_shmem->next_write_page++;
     }
 }

@@ -7,7 +7,7 @@ find_package(OpenSSL REQUIRED)
 set(WEBSOCKETPP_PATH /home/git_repos/websocketpp)
 
 add_executable(ReqRespProcess main.cpp
-                         MDConnector.cpp
+                         RespConnector.cpp
                          ShmemManager.cpp
                          RespProcessor.cpp
                          ../Utils/SymbolIDManager.cpp
