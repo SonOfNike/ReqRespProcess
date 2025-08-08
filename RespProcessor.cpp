@@ -24,7 +24,7 @@ void RespProcessor::shutDown(){
     
 }
 
-void RespProcessor::process_cancel(simdjson::dom::object _obj){
+void RespProcessor::process_cancel(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::CANCEL_CONFIRM;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -33,7 +33,7 @@ void RespProcessor::process_cancel(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_fill(simdjson::dom::object _obj){
+void RespProcessor::process_fill(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::TRADE_CONFIRM;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -53,7 +53,7 @@ void RespProcessor::process_fill(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_order_reject(simdjson::dom::object _obj){
+void RespProcessor::process_order_reject(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::ORDER_REJECT;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -62,7 +62,7 @@ void RespProcessor::process_order_reject(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_cancel_reject(simdjson::dom::object _obj){
+void RespProcessor::process_cancel_reject(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::CANCEL_REJECT;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -71,7 +71,7 @@ void RespProcessor::process_cancel_reject(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_replace(simdjson::dom::object _obj){
+void RespProcessor::process_replace(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::MODORDER_CONFIRM;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -80,7 +80,7 @@ void RespProcessor::process_replace(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_order_confirm(simdjson::dom::object _obj){
+void RespProcessor::process_order_confirm(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::NEWORDER_CONFIRM;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());
@@ -89,7 +89,7 @@ void RespProcessor::process_order_confirm(simdjson::dom::object _obj){
     mShmemManager->write_resp(currentResponse);
 }
 
-void RespProcessor::process_replace_reject(simdjson::dom::object _obj){
+void RespProcessor::process_replace_reject(const simdjson::dom::object& _obj){
     currentResponse.clear();
     currentResponse.m_type = resp_type::MOD_REJECT;
     currentResponse.m_symbolId = mSymIDManager->getID(_obj["order"]["symbol"].get_string());

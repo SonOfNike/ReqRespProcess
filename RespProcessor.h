@@ -21,11 +21,11 @@ public:
     static RespProcessor* getInstance();
     void startUp();
     void shutDown();
-    void process_cancel(simdjson::dom::object obj);
-    void process_fill(simdjson::dom::object obj);
-    void process_order_reject(simdjson::dom::object obj);
-    void process_cancel_reject(simdjson::dom::object obj);
-    void process_replace(simdjson::dom::object obj);
-    void process_order_confirm(simdjson::dom::object obj);
-    void process_replace_reject(simdjson::dom::object obj);
+    void process_cancel(const simdjson::dom::object& obj);
+    void process_fill(const simdjson::dom::object& obj);
+    void process_order_reject(const simdjson::dom::object& obj);
+    void process_cancel_reject(const simdjson::dom::object& obj);
+    void process_replace(const simdjson::dom::object& obj);
+    void process_order_confirm(const simdjson::dom::object& obj);
+    void process_replace_reject(const simdjson::dom::object& obj);
 };
